@@ -34,7 +34,15 @@ exports.consulta = function(req, res){
 
 exports.incluir = function(req, res){
     var salvar = pessoa.build({
-        'nome': req.body.nome
+        'nome': req.body.nome,
+        'dt_nascimento': req.body.dt_nascimento,
+        "cpf": req.body.cpf,
+        "email": req.body.email,
+        "cep": req.body.cep,
+        "uf": req.body.uf,
+        "cidade": req.body.cidade,
+        "bairro": req.body.bairro,
+        "ativo": true
     });
 
     salvar.save().complete(function (err){
