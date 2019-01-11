@@ -2,45 +2,30 @@ const funcionario = require("../models/funcionario")
 var moment = require('moment');
 
 exports.consulta = function(req, res){
-    var nome = req.params.descricao;
+    var query = { fl_ativo: true };		
+	var nome = req.params.descricao;
+	
+	if(nome != null && nome != undefined){
+		query.nome = {$like:'%' + nome + '%' };
+    }	    
     
-    if(nome != null && nome != undefined){
-        funcionario.findAll({
-            where: {
-                nome: {$like:'%' +nome + '%' }, 
-                fl_ativo: true
-            },
-            order:['nome']
-        }).then(function(resultadoEncontrado){
-                if(resultadoEncontrado.length){
-                    res.send(resultadoEncontrado)
-                }else{
-                    res.send("funcionario '" + nome + "' não foi encontrado!")
-                }
-            })
-    }else{
-        funcionario.findAll({
-            where: {fl_ativo: true}
-        }).then(function(resultadoEncontrado){
-                if(resultadoEncontrado.length){
-                    res.send(resultadoEncontrado)
-                }else{
-                    res.send("Nenhum funcionário foi encontrado!")
-                }
-            })
-            .catch(function(err){
-                res.send("Tente novamente mais tarde");
-            })
-    }
-}
+    funcionario.findAll({
+		where: query,
+		order:['nome']
+	}).then(function(resultadoEncontrado){
+		if(resultadoEncontrado.length){
+			res.send(resultadoEncontrado)
+		}else{
+            res.send("O funcionario não foi encontrado!")
+        }
+    })
+    .catch(function(err){
+        res.send("Erro ao consultar funcionário. Tente novamente mais tarde!");
+    })
+}            
 
 exports.incluir = function(req, res){
-    
     validarCampos(req, res);
-    
-    if(!req.body.dt_demissao){
-        req.body.dt_demissao = null
-    }
     
     var salvar = funcionario.build({
         "nome": req.body.nome,
@@ -83,17 +68,13 @@ exports.incluir = function(req, res){
 
     //Editar funcionário
        if(idfuncionario){
-       
-        if(!req.body.dt_demissao){
-            req.body.dt_demissao = null
-        }
             resultadoEncontrado.updateAttributes({
                 'nome': req.body.nome,
                 "cargo": req.body.cargo,
                 "salario": req.body.salario,
                 "descricao": req.body.descricao,
                 "dt_admissao": req.body.dt_admissao,
-                "dt_demissao": req.body.dt_demissao,
+                "dt_demissao": req.body.dt_demissao ? req.body.dt_demissao: null,
                 'dt_nascimento': req.body.dt_nascimento,
                 "cpf": req.body.cpf,
                 "email": req.body.email,
@@ -117,17 +98,9 @@ exports.remove = function(req,res){
     var idfuncionario = req.params.idFuncionario;
     var nome = req.params.nome;
 
-    if(nome == undefined || nome == null){
-        res.send( "Campo nome é obrigatório!")
-    }
-
     funcionario.findOne({
         where: {id_funcionario: idfuncionario, fl_ativo: true}
     }).then(function(resultadoEncontrado){
-
-    // funcionario.findOne({
-    //     where: {nome: nome, fl_ativo: 1}
-    // }).then(function(resultadoEncontrado){
         if(resultadoEncontrado){
             resultadoEncontrado.update({
                 'ativo': '0'
@@ -144,7 +117,6 @@ exports.remove = function(req,res){
 }
 
 function validarCampos(req, res){
-  
     if(!req.body.nome){
         res.send("Favor preencha o campo nome")
     }
