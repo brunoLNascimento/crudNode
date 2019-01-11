@@ -13,4 +13,4 @@ Depois de rodar o comando "npm install" bastar rodar;
 ```sh
 npm start
 ```
-e aparecerar no console "Servidor rodando na porta: 3003".
+e aparecerá no console "Servidor rodando na porta: 3003".
