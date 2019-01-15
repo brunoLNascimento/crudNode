@@ -68,22 +68,9 @@ exports.incluir = function(req, res){
 
     //Editar funcionário
        if(idfuncionario){
-            resultadoEncontrado.updateAttributes({
-                'nome': req.body.nome,
-                "cargo": req.body.cargo,
-                "salario": req.body.salario,
-                "descricao": req.body.descricao,
-                "dt_admissao": req.body.dt_admissao,
-                "dt_demissao": req.body.dt_demissao ? req.body.dt_demissao: null,
-                'dt_nascimento': req.body.dt_nascimento,
-                "cpf": req.body.cpf,
-                "email": req.body.email,
-                "cep": req.body.cep,
-                "uf": req.body.uf,
-                "cidade": req.body.cidade,
-                "bairro": req.body.bairro,
-                "ativo": true
-            }).complete(function (err){
+            resultadoEncontrado.updateAttributes(
+              salvar.dataValues
+            ).complete(function (err){
                 if(err){
                     res.send("Erro ao tentar atualizar '" +req.body.nome+ "', tente mais tarde!");
                 }else{
